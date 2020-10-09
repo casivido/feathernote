@@ -1,30 +1,41 @@
 import React from 'react';
-import {Editor, EditorState} from 'draft-js';
+import {Editor, EditorState, RichUtils} from 'draft-js';
+import styled from 'styled-components'
 
-function MyEditor() {
-  const [editorState, setEditorState] = React.useState(
-    EditorState.createEmpty()
-  );
-
-  const editor = React.useRef(null);
-
-  function focusEditor() {
-    editor.current.focus();
+class MyEditorBase extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {editorState: EditorState.createEmpty()};
+    this.onChange = editorState => this.setState({editorState});
+    this.handleKeyCommand = this.handleKeyCommand.bind(this);
   }
 
-  React.useEffect(() => {
-    focusEditor()
-  }, []);
+  handleKeyCommand(command, editorState) {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    console.log('command', command);
+    if (newState) {
+      this.onChange(newState);
+      return 'handled';
+    }
 
-  return (
-    <div onClick={focusEditor}>
+    return 'not-handled';
+  }
+
+  render() {
+    return (
       <Editor
-        ref={editor}
-        editorState={editorState}
-        onChange={editorState => setEditorState(editorState)}
+        editorState={this.state.editorState}
+        handleKeyCommand={this.handleKeyCommand}
+        onChange={this.onChange}
       />
-    </div>
-  );
+    );
+  }
 }
+
+const MyEditor = styled(MyEditorBase)`
+  width: 100%;
+  background: white;
+  color: black;
+`;
 
 export default MyEditor;
