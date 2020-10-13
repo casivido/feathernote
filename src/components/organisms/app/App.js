@@ -5,24 +5,25 @@ import CornerIcon from '../../atoms/CornerIcon/CornerIcon';
 import styled from 'styled-components';
 
 // Load Montserrat typeface
-require('typeface-montserrat')
+import 'typeface-montserrat';
 
 const App = () => (
-  <div className="App">
-    <Container>
-      <MyEditor />
-      <CornerIcon src={logo} />
-    </Container>
-  </div>
+	<div className="App">
+		<Container>
+			<MyEditor />
+			<CornerIcon src={logo} />
+		</Container>
+	</div>
 );
 
 const Container = styled.div`
-    background-color: white;
-    color: black;
-    height: 100vh;
-    width: 100vw;
-    font-family: Montserrat;
-    overflow-y: hidden;
+	background-color: white;
+	color: black;
+	font-size: 16px;
+	height: 100vh;
+	width: 100vw;
+	font-family: Montserrat;
+	overflow-y: hidden;
 `;
 
 export default App;
