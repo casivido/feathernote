@@ -18,12 +18,12 @@ const rotate = keyframes`
 // TODO: Correlate rotation with scroll position
 const StyledImg = styled.img`
 	position: absolute;
-	height: 100px;
+	height: 60px;
 	right: 50px;
-	bottom: 50px;
+	bottom: 40px;
 
 	@media (prefers-reduced-motion: no-preference) {
-		animation: ${rotate} infinite .2s linear;
+		animation: ${rotate} infinite 40s linear;
 	}
 `;
 

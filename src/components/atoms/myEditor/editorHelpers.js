@@ -1,7 +1,7 @@
 import {EditorState, RichUtils} from 'draft-js';
 
-const setFocusToEnd = (editorState, setEditorState) => () =>  {
-	if (!editorState.getSelection().getHasFocus()) {
+const setFocusToEnd = (editorState, setEditorState, force = false) => () =>  {
+	if (force && !editorState.getSelection().getHasFocus()) {
 		setEditorState(EditorState.moveFocusToEnd(editorState));
 	}
 }
