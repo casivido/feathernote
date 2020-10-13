@@ -67,6 +67,19 @@ const MyEditor = () => {
     setEditorState(editorState);
   }
 
+  // const handleKeyBindings = e => {
+  //   // TAB
+  //   if (e.keyCode === 9) {
+  //     const newEditorState = RichUtils.onTab(e, editorState, 6 /* maxDepth */)
+  //     if (newEditorState !== editorState) {
+  //        setEditorState(newEditorState)
+  //     }
+  //   }
+  //   else {
+  //     return getDefaultKeyBinding(e)
+  //   }
+  // }
+
   return (
     <>
       <EditorOverlays />
@@ -80,8 +93,10 @@ const MyEditor = () => {
       >
         <Editor
           editorState={editorState}
+          // handleKeyCommand={handleKeyBindings}
           onChange={onChange}
           plugins={[autoListPlugin, listDepthPlugin]}
+          // onTab={handleKeyBindings}
         />
         <ScrollPaddingDiv />
       </StyledContainer>
