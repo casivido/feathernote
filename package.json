@@ -8,11 +8,15 @@
     "@testing-library/user-event": "^7.1.2",
     "core-util-is": "^1.0.2",
     "draft-js": "^0.11.7",
+    "draft-js-autolist-plugin": "^3.0.0",
+    "draft-js-list-depth-plugin": "^1.0.1",
+    "draft-js-plugins-editor": "^3.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-froala-wysiwyg": "^3.2.2-1",
     "react-scripts": "3.4.3",
-    "styled-components": "^5.2.0"
+    "styled-components": "^5.2.0",
+    "typeface-montserrat": "^1.1.13"
   },
   "scripts": {
     "start": "react-scripts start",
