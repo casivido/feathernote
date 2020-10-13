@@ -37,7 +37,7 @@ const StyledContainer = styled.div`
 	.DraftEditor-root {
 		background-color: white;
 		color: black;
-		padding-top: 200px;
+		padding-top: 200px;git
 	}
 `;
 
@@ -53,7 +53,8 @@ const Title = styled.h1`
 	top: 30px;
 	left: 40px;
 	font-weight: 200;
-	padding: 0;
+	border-bottom: black solid .1rem;
+	padding: 0 10px 0 5px;
 	margin: 0;
 `;
 
@@ -89,6 +90,7 @@ const MyEditor = () => {
 					handleKeyCommand={handleKeyCommand(setEditorState)}
 					onChange={setEditorState}
 					plugins={[autoListPlugin, listDepthPlugin]}
+					placeholder={"Hi there..."}
 				/>
 				<ScrollPaddingDiv />
 			</StyledContainer>
