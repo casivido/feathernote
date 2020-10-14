@@ -6,7 +6,8 @@ import styled from 'styled-components';
 import 'draft-js/dist/Draft.css';
 
 // Internal
-import EditorOverlays from '../EditorOverlays/EditorOverlays';
+import EditorOverlays from '../../atoms/EditorOverlays/EditorOverlays';
+import Toolbar from '../../atoms/Toolbar/Toolbar';
 import {setFocusToEnd, handleKeyCommand} from './editorHelpers';
 
 // Editor Plugins
@@ -17,6 +18,7 @@ const autoListPlugin = createAutoListPlugin()
 
 const StyledContainer = styled.div`
 	position: absolute;
+	font-size: 1.2rem;
 	left: 20vw;
 	width: 60vw;
 	height: 100vh;
@@ -28,16 +30,14 @@ const StyledContainer = styled.div`
 			background: transparent;
 	}
 
-	// Code for styling scrollbar:
-	// ::-webkit-scrollbar-thumb {
-	//   background: #00000010;
-	//   border-radius: 10px;
-	// }
+	li {
+		margin: 2px 0;
+	}
 
 	.DraftEditor-root {
 		background-color: white;
 		color: black;
-		padding-top: 200px;git
+		padding-top: 150px;
 	}
 `;
 
@@ -45,17 +45,6 @@ const ScrollPaddingDiv = styled.div`
 	position: absolute;
 	height: 90vh;
 	width: 1px;
-`;
-
-const Title = styled.h1`
-	font-size: 4rem;
-	position: absolute;
-	top: 30px;
-	left: 40px;
-	font-weight: 200;
-	border-bottom: black solid .1rem;
-	padding: 0 10px 0 5px;
-	margin: 0;
 `;
 
 const MyEditor = () => {
@@ -68,10 +57,7 @@ const MyEditor = () => {
 	);
 
 	// Keep curried function bound to current state
-	const mySetFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
-
-	// Start with focus at the end
-	useEffect(mySetFocusToEnd, []);
+	const setMyFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
 
 	// Keep local storage up to date, TODO: debounce unnecessary amounts of saving
 	useEffect(() => {
@@ -81,9 +67,9 @@ const MyEditor = () => {
 	return (
 		<>
 			<EditorOverlays />
-			<Title>Main</Title>
+			<Toolbar editorState={editorState} setEditorState={setEditorState} />
 			<StyledContainer
-				onClick={mySetFocusToEnd}
+				onClick={setMyFocusToEnd}
 			>
 				<Editor
 					editorState={editorState}
