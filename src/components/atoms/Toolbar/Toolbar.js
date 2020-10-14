@@ -16,10 +16,10 @@ const Wrapper = styled.div`
 
 const CategoryWrapper = styled.div`
     display: inline-block;
+    margin: 0 5px;
 
     &:not(:last-child) {
         border-right: solid black 1px;
-        margin: 0 5px;
         padding-right: 10px;
     }
 `;
@@ -52,85 +52,87 @@ const StyleButton = styled.div`
     }
 `;
 
-const Toolbar = ({ editorState, setEditorState }) => {
-	const toolbarCategories = [
-		[
-            {
-                value: 'H1',
-                getNewEditorState: () =>
-                    RichUtils.toggleBlockType(editorState, 'header-one'),
-                title: 'Header 1'
-            },
-            {
-                value: 'H2',
-                getNewEditorState: () =>
-                    RichUtils.toggleBlockType(editorState, 'header-two'),
-                title: 'Header 2'
-            }
-        ],
-		[
-            {
-                value: 'B',
-                class: 'bold',
-                getNewEditorState: () => RichUtils.toggleInlineStyle(editorState, 'BOLD'),
-                title: 'Bold'
-            },
-            {
-                value: 'I',
-                class: 'italic',
-                getNewEditorState: () =>
-                    RichUtils.toggleInlineStyle(editorState, 'ITALIC'),
-                title: 'Italic'
-            },
-            {
-                value: 'U',
-                class: 'underline',
-                getNewEditorState: () =>
-                    RichUtils.toggleInlineStyle(editorState, 'UNDERLINE'),
-                title: 'Underline'
-            }
-        ],
-		[
-            {
-                value: <img src={unorderedList} />,
-                getNewEditorState: () =>
-                    RichUtils.toggleBlockType(editorState, 'unordered-list-item'),
-                title: 'Unordered List'
-            },
-            {
-                value: <img src={orderedList} />,
-                getNewEditorState: () =>
-                    RichUtils.toggleBlockType(editorState, 'ordered-list-item'),
-                title: 'Ordered List'
-            }
-        ]
-	];
-
-	return (
-		<Wrapper>
-			{toolbarCategories.map(category => (
-                <CategoryWrapper>
-                    {category.map(item => (
-                        <StyleButton
-                            key={item.value}
-                            className={item.class || ''}
-                            title={item.title}
-                            onMouseDown={evt => {
-                                evt.preventDefault();
-                                if (item.getNewEditorState) {
-                                    setEditorState(item.getNewEditorState());
-                                }
-                            }}
-                            alt={item.title}
-                        >
-                            <span>{item.value}</span>
-                        </StyleButton>
-                    ))}
-                </CategoryWrapper>
-            ))}
-		</Wrapper>
-	);
+const toolbarButtons = {
+    header1: {
+        value: 'H1',
+        getNewEditorState: (editorState) =>
+            RichUtils.toggleBlockType(editorState, 'header-one'),
+        title: 'Header 1'
+    },
+    header2: {
+        value: 'H2',
+        getNewEditorState: (editorState) =>
+            RichUtils.toggleBlockType(editorState, 'header-two'),
+        title: 'Header 2'
+    },
+    bold: {
+        value: 'B',
+        class: 'bold',
+        getNewEditorState: (editorState) => RichUtils.toggleInlineStyle(editorState, 'BOLD'),
+        title: 'Bold'
+    },
+    italic: {
+        value: 'I',
+        class: 'italic',
+        getNewEditorState: (editorState) =>
+            RichUtils.toggleInlineStyle(editorState, 'ITALIC'),
+        title: 'Italic'
+    },
+    underline: {
+        value: 'U',
+        class: 'underline',
+        getNewEditorState: (editorState) =>
+            RichUtils.toggleInlineStyle(editorState, 'UNDERLINE'),
+        title: 'Underline'
+    },
+    ul: {
+        value: <img src={unorderedList} />,
+        getNewEditorState: (editorState) =>
+            RichUtils.toggleBlockType(editorState, 'unordered-list-item'),
+        title: 'Unordered List'
+    },
+    ol: {
+        value: <img src={orderedList} />,
+        getNewEditorState: (editorState) =>
+            RichUtils.toggleBlockType(editorState, 'ordered-list-item'),
+        title: 'Ordered List'
+    }
 };
+
+const defaultButtonLayout = [
+    ['header1', 'header2'],
+    ['bold', 'italic', 'underline'],
+    ['ul', 'ol']
+];
+
+const Toolbar = ({
+    editorState,
+    setEditorState,
+    toolbarLayout = defaultButtonLayout
+}) => (
+    <Wrapper>
+        {toolbarLayout.map(category => (
+            <CategoryWrapper>
+                {category.map(buttonKey => {
+                    const buttonData = toolbarButtons[buttonKey];
+
+                    return <StyleButton
+                        className={buttonData.class || ''}
+                        onMouseDown={evt => {
+                            evt.preventDefault();
+                            if (buttonData.getNewEditorState) {
+                                setEditorState(buttonData.getNewEditorState(editorState));
+                            }
+                        }}
+                        alt={buttonData.title}
+                    >
+                        <span>{buttonData.value}</span>
+                    </StyleButton>
+                })}
+            </CategoryWrapper>
+        ))}
+    </Wrapper>
+);
 
 Toolbar.propTypes = {
 	editorState: PropTypes.object.isRequired,
