@@ -1,6 +1,6 @@
 // External
 import React, {useEffect, useState, useCallback} from 'react';
-import {EditorState, convertToRaw, convertFromRaw} from 'draft-js';
+import {EditorState} from 'draft-js';
 import Editor from 'draft-js-plugins-editor';
 import styled from 'styled-components';
 import 'draft-js/dist/Draft.css';
@@ -47,12 +47,10 @@ const ScrollPaddingDiv = styled.div`
 	width: 1px;
 `;
 
-const MyEditor = () => {
-	// Load from local storage
-	const [localContent] = useState(JSON.parse(localStorage.getItem('rawEditorContent')));
+const MyEditor = ({content, saveContent}) => {
 	const [editorState, setEditorState] = useState(
-		localContent
-			? EditorState.createWithContent(convertFromRaw(localContent))
+		content
+			? EditorState.createWithContent(content)
 			: EditorState.createEmpty()
 	);
 
@@ -61,8 +59,8 @@ const MyEditor = () => {
 
 	// Keep local storage up to date, TODO: debounce unnecessary amounts of saving
 	useEffect(() => {
-		localStorage.setItem('rawEditorContent', JSON.stringify(convertToRaw(editorState.getCurrentContent())))
-	}, [editorState]);
+		saveContent(editorState.getCurrentContent());
+	}, [editorState, saveContent]);
 
 	return (
 		<>
