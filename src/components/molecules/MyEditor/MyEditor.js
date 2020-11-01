@@ -13,6 +13,8 @@ import {setFocusToEnd, handleKeyCommand} from './editorHelpers';
 // Editor Plugins
 import createAutoListPlugin from 'draft-js-autolist-plugin';
 import createListDepthPlugin from 'draft-js-list-depth-plugin';
+import createImagePlugin from 'draft-js-image-plugin';
+const imagePlugin = createImagePlugin()
 const listDepthPlugin = createListDepthPlugin()
 const autoListPlugin = createAutoListPlugin()
 
@@ -47,12 +49,11 @@ const ScrollPaddingDiv = styled.div`
 	width: 1px;
 `;
 
-const MyEditor = ({content, saveContent}) => {
-	const [editorState, setEditorState] = useState(
-		content
-			? EditorState.createWithContent(content)
-			: EditorState.createEmpty()
-	);
+const MyEditor = ({content, currentNoteId, saveContent}) => {
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(content));
+	useEffect(() => {
+		setEditorState(EditorState.createWithContent(content))
+	}, [currentNoteId])
 
 	// Keep curried function bound to current state
 	const setMyFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
@@ -73,7 +74,7 @@ const MyEditor = ({content, saveContent}) => {
 					editorState={editorState}
 					handleKeyCommand={handleKeyCommand(setEditorState)}
 					onChange={setEditorState}
-					plugins={[autoListPlugin, listDepthPlugin]}
+					plugins={[autoListPlugin, listDepthPlugin, imagePlugin]}
 					placeholder={"Hi there..."}
 				/>
 				<ScrollPaddingDiv />

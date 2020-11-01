@@ -1,47 +1,18 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useMemo} from 'react';
+import styled from 'styled-components';
+import {ContentState, convertToRaw, convertFromRaw} from 'draft-js';
+
 import logo from '../../../images/logo.svg';
 import MyEditor from '../../molecules/MyEditor/MyEditor';
 import CornerIcon from '../../atoms/CornerIcon/CornerIcon';
-import styled from 'styled-components';
-import {ContentState, convertToRaw, convertFromRaw} from 'draft-js';
+import NoteSelector from '../../atoms/NoteSelector/NoteSelector';
 
 // Load Montserrat typeface
 import 'typeface-montserrat';
 
 const DEFAULT_NOTE = {
-	0: {
-		title: 'Main',
-		content: convertToRaw((new ContentState.createFromText('')))
-	}
-};
-
-const App = () => {
-	const [noteData, setNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || DEFAULT_NOTE);
-
-	const [currentNoteId, setCurrentNoteId] = useState(Object.keys(noteData)[0]);
-
-	const saveCurrentNoteContent = useCallback((editorContent) => {
-		localStorage.setItem(`noteContents`, JSON.stringify({
-			...noteData,
-			[currentNoteId]: {
-				title: noteData[currentNoteId].title,
-				content: convertToRaw(editorContent)
-			}
-		}));
-	}, [currentNoteId, noteData]);
-
-	return (
-		<div className="App">
-			<Container>
-				<Title>{noteData[currentNoteId].title.toUpperCase()}</Title>
-				<MyEditor
-					content={convertFromRaw(noteData[currentNoteId].content)}
-					saveContent={saveCurrentNoteContent}
-				/>
-				<CornerIcon src={logo} />
-			</Container>
-		</div>
-	);
+	title: 'Main',
+	content: convertToRaw(new ContentState.createFromText(''))
 };
 
 const Container = styled.div`
@@ -65,5 +36,58 @@ const Title = styled.h1`
 	position: absolute;
 	top: 30px;
 `;
+
+const App = () => {
+	const [rawNoteData, setRawNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || [DEFAULT_NOTE]);
+	const [currentNoteId, setCurrentNoteId] = useState(0);
+
+	const currentNoteData = useMemo(() => {
+		if(rawNoteData[currentNoteId]) {
+			return {
+				...rawNoteData[currentNoteId],
+				content: convertFromRaw(rawNoteData[currentNoteId].content)
+			};
+		} else {
+			const newContent = new ContentState.createFromText('');
+			const newNoteData = {
+				content: newContent,
+				title: `Note ${currentNoteId}`
+			}
+			let newRawNoteData = rawNoteData;
+			newRawNoteData[currentNoteId] = {...newNoteData, content: convertToRaw(newContent)}
+			setRawNoteData(newRawNoteData);
+			return newNoteData;
+		};
+	}, [rawNoteData, currentNoteId]);
+
+	const saveCurrentNoteContent = useCallback((editorContent) => {
+		let newRawNoteData = rawNoteData;
+		newRawNoteData[currentNoteId] = {
+			title: currentNoteData.title,
+			content: convertToRaw(editorContent)
+		};
+
+		localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
+	}, [currentNoteId, currentNoteData]);
+
+	return (
+		<div className="App">
+			<Container>
+				<Title>{currentNoteData.title.toUpperCase()}</Title>
+				<NoteSelector
+					setCurrentNoteId={setCurrentNoteId}
+					currentNoteId={currentNoteId}
+					noteTitles={rawNoteData.map(note => note.title)}
+				/>
+				<MyEditor
+					content={currentNoteData.content}
+					currentNoteId={currentNoteId}
+					saveContent={saveCurrentNoteContent}
+				/>
+				<CornerIcon src={logo} />
+			</Container>
+		</div>
+	);
+};
 
 export default App;

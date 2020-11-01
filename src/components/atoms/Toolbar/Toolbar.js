@@ -111,13 +111,14 @@ const Toolbar = ({
 	toolbarLayout = defaultButtonLayout
 }) => (
 	<Wrapper>
-		{toolbarLayout.map(category => (
-			<CategoryWrapper>
+		{toolbarLayout.map((category, index) => (
+			<CategoryWrapper key={index}>
 				{category.map(buttonKey => {
 					const buttonData = toolbarButtons[buttonKey];
 
 					return <StyleButton
 						className={buttonData.classes || ''}
+						key={buttonKey}
 						onMouseDown={evt => {
 							evt.preventDefault();
 							if (buttonData.getNewEditorState) {
