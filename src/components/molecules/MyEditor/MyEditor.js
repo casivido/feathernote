@@ -7,14 +7,11 @@ import 'draft-js/dist/Draft.css';
 
 // Internal
 import EditorOverlays from '../../atoms/EditorOverlays/EditorOverlays';
-import Toolbar from '../../atoms/Toolbar/Toolbar';
 import {setFocusToEnd, handleKeyCommand} from './editorHelpers';
 
 // Editor Plugins
 import createAutoListPlugin from 'draft-js-autolist-plugin';
 import createListDepthPlugin from 'draft-js-list-depth-plugin';
-import createImagePlugin from 'draft-js-image-plugin';
-const imagePlugin = createImagePlugin()
 const listDepthPlugin = createListDepthPlugin()
 const autoListPlugin = createAutoListPlugin()
 
@@ -49,7 +46,8 @@ const ScrollPaddingDiv = styled.div`
 	width: 1px;
 `;
 
-const MyEditor = ({content, currentNoteId, saveContent}) => {
+// TODO: default props
+const MyEditor = ({content, currentNoteId, updateParentEditorState = () => {}}) => {
 	const [editorState, setEditorState] = useState(EditorState.createWithContent(content));
 	useEffect(() => {
 		setEditorState(EditorState.createWithContent(content))
@@ -58,23 +56,21 @@ const MyEditor = ({content, currentNoteId, saveContent}) => {
 	// Keep curried function bound to current state
 	const setMyFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
 
-	// Keep local storage up to date, TODO: debounce unnecessary amounts of saving
-	useEffect(() => {
-		saveContent(editorState.getCurrentContent());
-	}, [editorState, saveContent]);
-
+	const onEditorChange = editorState => {
+		updateParentEditorState(editorState);
+		setEditorState(editorState);
+	}
 	return (
 		<>
 			<EditorOverlays />
-			<Toolbar editorState={editorState} setEditorState={setEditorState} />
 			<StyledContainer
 				onClick={setMyFocusToEnd}
 			>
 				<Editor
 					editorState={editorState}
 					handleKeyCommand={handleKeyCommand(setEditorState)}
-					onChange={setEditorState}
-					plugins={[autoListPlugin, listDepthPlugin, imagePlugin]}
+					onChange={onEditorChange}
+					plugins={[autoListPlugin, listDepthPlugin]}
 					placeholder={"Hi there..."}
 				/>
 				<ScrollPaddingDiv />

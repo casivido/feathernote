@@ -7,11 +7,10 @@ import unorderedList from '../../../images/unordered-list.svg';
 import orderedList from '../../../images/ordered-list.svg';
 
 const Wrapper = styled.div`
-	left: 20vw;
-	position: absolute;
-	text-align: center;
-	top: 40px;
 	z-index: 999;
+	margin-left: 40px;
+	display: inline-block;
+	transform: translateY(-15px);
 `;
 
 const CategoryWrapper = styled.div`
@@ -31,6 +30,7 @@ const StyleButton = styled.div`
 	height: 2rem;
 	margin: 10px;
 	padding: 5px;
+	text-align: center;
 	width: 2rem;
 
 	span {

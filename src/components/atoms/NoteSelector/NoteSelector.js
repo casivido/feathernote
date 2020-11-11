@@ -9,8 +9,7 @@ const NotesWrapper = styled.div`
     padding-left: 10px;
     border-left: solid black 2px;
 	text-align: center;
-    top: 45%;
-    transform: translateY(-50%);
+    top: 30vh;
 `;
 
 const NoteItem = styled.div`
@@ -38,8 +37,7 @@ const NoteItem = styled.div`
 
 const NoteSelector = ({
     noteTitles,
-    setCurrentNoteId,
-    newNote
+    setCurrentNoteId
 }) => (
 	<NotesWrapper>
 		{noteTitles.map((title, index) => (

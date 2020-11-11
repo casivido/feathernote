@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {ReactDOM, useState, useCallback, useRef, useMemo, useEffect} from 'react';
 import styled from 'styled-components';
 import {ContentState, convertToRaw, convertFromRaw} from 'draft-js';
 
@@ -6,9 +6,12 @@ import logo from '../../../images/logo.svg';
 import MyEditor from '../../molecules/MyEditor/MyEditor';
 import CornerIcon from '../../atoms/CornerIcon/CornerIcon';
 import NoteSelector from '../../atoms/NoteSelector/NoteSelector';
+import Toolbar from '../../atoms/Toolbar/Toolbar';
 
 // Load Montserrat typeface
 import 'typeface-montserrat';
+
+const deepEqual = require('deep-equal');
 
 const DEFAULT_NOTE = {
 	title: 'Main',
@@ -23,23 +26,56 @@ const Container = styled.div`
 	height: 100vh;
 	overflow-y: hidden;
 	width: 100vw;
+
+	.title {
+		border: none;
+		border-bottom: black solid .1rem;
+		border-radius: 12px;
+		font-family: Montserrat;
+		font-size: 64px;
+		font-weight: 200;
+		margin: 48px 0 0 48px;
+		text-transform: uppercase;
+	}
+
+	input:focus { outline: none; }
 `;
 
-const Title = styled.h1`
+const HeaderWrapper = styled.div`
+	position: absolute;
+	width: 100vw;
+	z-index: 999;
+`;
+
+const Title = styled.input`
+	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
+	font-family: Montserrat;
 	font-size: 4rem;
 	font-weight: 200;
-	left: 40px;
-	margin: 0;
-	padding: 0 10px 0 5px;
+	margin: 3rem 0 0 3rem;
+	min-width: 1rem;
+	text-transform: uppercase;
+	width: ${props => (props.width)}px;
+`;
+const TitleMeasurer = styled.span`
+	visibility: hidden;
 	position: absolute;
-	top: 30px;
+	border: none;
+	border-bottom: black solid .1rem;
+	border-radius: 12px;
+	font-family: Montserrat;
+	font-size: 4rem;
+	font-weight: 200;
+	margin: 3rem 0 0 3rem;
+	text-transform: uppercase;
 `;
 
 const App = () => {
 	const [rawNoteData, setRawNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || [DEFAULT_NOTE]);
 	const [currentNoteId, setCurrentNoteId] = useState(0);
+	const titleRef = useRef();
 
 	const currentNoteData = useMemo(() => {
 		if(rawNoteData[currentNoteId]) {
@@ -60,29 +96,59 @@ const App = () => {
 		};
 	}, [rawNoteData, currentNoteId]);
 
-	const saveCurrentNoteContent = useCallback((editorContent) => {
-		let newRawNoteData = rawNoteData;
+	const saveCurrentNote = useCallback(({editorContent, title}) => {
+		let newRawNoteData = [...rawNoteData];
 		newRawNoteData[currentNoteId] = {
-			title: currentNoteData.title,
-			content: convertToRaw(editorContent)
+			title: title !== undefined ? title : currentNoteData.title,
+			content: convertToRaw(editorContent || currentNoteData.content)
 		};
 
-		localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
+		const notesChanged = newRawNoteData[currentNoteId].title !== currentNoteData.title
+			|| !deepEqual(newRawNoteData[currentNoteId].content, rawNoteData[currentNoteId].content);
+		if(notesChanged) {
+			localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
+			setRawNoteData(newRawNoteData);
+		}
 	}, [currentNoteId, currentNoteData]);
 
+	const handleTitleChange = evt => {
+		if((evt.target.value.length < 15) && (currentNoteData.title !== evt.target.value)){
+			saveCurrentNote({title: evt.target.value});
+		}
+	};
+
+	const [editorState, setEditorState] = useState();
+
+	const updateEditorState = editorState => {
+		saveCurrentNote({editorContent: editorState.getCurrentContent()});
+	}
+
+	// TODO: make font not load so this works on initial load to remove +5
+	const [initialWidth, setInitialWidth] = useState(10);
+	const [width, setWidth] = useState(0);
+	useEffect(() => {
+		setWidth(titleRef.current ? titleRef.current.offsetWidth + initialWidth : 100);
+		setInitialWidth(0);
+	}, [currentNoteData.title]);
+
 	return (
-		<div className="App">
+		<div id="AppRoot" className="App">
 			<Container>
-				<Title>{currentNoteData.title.toUpperCase()}</Title>
 				<NoteSelector
 					setCurrentNoteId={setCurrentNoteId}
 					currentNoteId={currentNoteId}
 					noteTitles={rawNoteData.map(note => note.title)}
 				/>
+				<HeaderWrapper>
+					<Title type="text" value={currentNoteData.title} width={width} onChange={handleTitleChange}/>
+					<TitleMeasurer ref={titleRef}>{currentNoteData.title}</TitleMeasurer>
+					<Toolbar editorState={editorState} setEditorState={setEditorState} />
+				</HeaderWrapper>
 				<MyEditor
 					content={currentNoteData.content}
 					currentNoteId={currentNoteId}
-					saveContent={saveCurrentNoteContent}
+					saveContent={saveCurrentNote}
+					updateParentEditorState={updateEditorState}
 				/>
 				<CornerIcon src={logo} />
 			</Container>
