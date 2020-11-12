@@ -1,4 +1,4 @@
-import React, {ReactDOM, useState, useCallback, useRef, useMemo, useEffect} from 'react';
+import React, {useState, useCallback, useRef, useMemo, useEffect} from 'react';
 import styled from 'styled-components';
 import {ContentState, convertToRaw, convertFromRaw} from 'draft-js';
 
@@ -7,9 +7,6 @@ import MyEditor from '../../molecules/MyEditor/MyEditor';
 import CornerIcon from '../../atoms/CornerIcon/CornerIcon';
 import NoteSelector from '../../atoms/NoteSelector/NoteSelector';
 import Toolbar from '../../atoms/Toolbar/Toolbar';
-
-// Load Montserrat typeface
-import 'typeface-montserrat';
 
 const deepEqual = require('deep-equal');
 
@@ -21,7 +18,6 @@ const DEFAULT_NOTE = {
 const Container = styled.div`
 	background-color: white;
 	color: black;
-	font-family: Montserrat;
 	font-size: 16px;
 	height: 100vh;
 	overflow-y: hidden;
@@ -31,10 +27,9 @@ const Container = styled.div`
 		border: none;
 		border-bottom: black solid .1rem;
 		border-radius: 12px;
-		font-family: Montserrat;
-		font-size: 64px;
+		font-size: 4rem;
 		font-weight: 200;
-		margin: 48px 0 0 48px;
+		margin: 2rem 0 0 2rem;
 		text-transform: uppercase;
 	}
 
@@ -48,28 +43,28 @@ const HeaderWrapper = styled.div`
 `;
 
 const Title = styled.input`
-	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
+	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
-	font-weight: 200;
-	margin: 3rem 0 0 3rem;
+	font-weight: lighter;
+	margin: 2.5rem 0 0 2.5rem;
 	min-width: 1rem;
 	text-transform: uppercase;
 	width: ${props => (props.width)}px;
 `;
 const TitleMeasurer = styled.span`
-	visibility: hidden;
-	position: absolute;
-	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
+	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
-	font-weight: 200;
+	font-weight: lighter;
 	margin: 3rem 0 0 3rem;
+	position: absolute;
 	text-transform: uppercase;
+	visibility: hidden;
 `;
 
 const App = () => {

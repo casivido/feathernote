@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import './fonts/Montserrat/Montserrat-Regular.ttf';
+import './fonts/Montserrat/Montserrat-Light.ttf';
 import './index.css';
 import App from './components/organisms/app/App';
 import * as serviceWorker from './serviceWorker';

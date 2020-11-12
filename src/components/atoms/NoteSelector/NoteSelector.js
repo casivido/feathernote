@@ -9,13 +9,12 @@ const NotesWrapper = styled.div`
     padding-left: 10px;
     border-left: solid black 2px;
 	text-align: center;
-    top: 30vh;
+    top: calc(150px + 5vh);
 `;
 
 const NoteItem = styled.div`
     background: transparent;
     border: none;
-    font-family: Monsterrat;
     font-size: 1rem;
     text-transform: uppercase;
     padding: 10px;
