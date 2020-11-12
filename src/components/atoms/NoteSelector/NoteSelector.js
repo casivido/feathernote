@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const NotesWrapper = styled.div`
-	left: 10px;
+    left: 10px;
+    font-weight: 200;
     position: absolute;
     padding: 10px 0;
     padding-left: 10px;

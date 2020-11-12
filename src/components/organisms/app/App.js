@@ -23,16 +23,6 @@ const Container = styled.div`
 	overflow-y: hidden;
 	width: 100vw;
 
-	.title {
-		border: none;
-		border-bottom: black solid .1rem;
-		border-radius: 12px;
-		font-size: 4rem;
-		font-weight: 200;
-		margin: 2rem 0 0 2rem;
-		text-transform: uppercase;
-	}
-
 	input:focus { outline: none; }
 `;
 
@@ -43,12 +33,12 @@ const HeaderWrapper = styled.div`
 `;
 
 const Title = styled.input`
+	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
-	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
-	font-weight: lighter;
+	font-weight: 200;
 	margin: 2.5rem 0 0 2.5rem;
 	min-width: 1rem;
 	text-transform: uppercase;
@@ -60,7 +50,7 @@ const TitleMeasurer = styled.span`
 	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
-	font-weight: lighter;
+	font-weight: 200;
 	margin: 3rem 0 0 3rem;
 	position: absolute;
 	text-transform: uppercase;
