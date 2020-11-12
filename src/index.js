@@ -1,10 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './fonts/Montserrat/Montserrat-Regular.ttf';
-import './fonts/Montserrat/Montserrat-Light.ttf';
-import './index.css';
 import App from './components/organisms/app/App';
 import * as serviceWorker from './serviceWorker';
+
+import './fonts/Montserrat/Montserrat-Regular.ttf';
+import './fonts/Montserrat/Montserrat-Italic.ttf';
+import './fonts/Montserrat/Montserrat-Light.ttf';
+import './fonts/Montserrat/Montserrat-LightItalic.ttf';
+import './fonts/Montserrat/Montserrat-Bold.ttf';
+import './fonts/Montserrat/Montserrat-BoldItalic.ttf';
+import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>

@@ -51,7 +51,7 @@ const MyEditor = ({content, currentNoteId, updateParentEditorState = () => {}}) 
 	const [editorState, setEditorState] = useState(EditorState.createWithContent(content));
 	useEffect(() => {
 		setEditorState(EditorState.createWithContent(content))
-	}, [currentNoteId])
+	}, [currentNoteId]); // eslint-disable-line
 
 	// Keep curried function bound to current state
 	const setMyFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
