@@ -29,10 +29,6 @@ const NoteItem = styled.div`
     }
 `;
 
-// const getAbbr = title => {
-//     title = title.
-// }
-
 const NoteSelector = ({
     noteTitles,
     setCurrentNoteId

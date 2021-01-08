@@ -1,6 +1,7 @@
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
-import {ContentState, convertToRaw, convertFromRaw} from 'draft-js';
+import {ContentState, convertToRaw, convertFromRaw, EditorState} from 'draft-js';
+import { debounce } from 'lodash';
 
 import logo from '../../../images/logo.svg';
 import MyEditor from '../../molecules/MyEditor/MyEditor';
@@ -37,6 +38,7 @@ const App = () => {
 	const [rawNoteData, setRawNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || [DEFAULT_NOTE]);
 	const [currentNoteId, setCurrentNoteId] = useState(0);
 
+	// Load note data or create new when currentNoteId change
 	const currentNoteData = useMemo(() => {
 		if(rawNoteData[currentNoteId]) {
 			return {
@@ -54,9 +56,10 @@ const App = () => {
 			setRawNoteData(newRawNoteData);
 			return newNoteData;
 		};
-	}, [rawNoteData, currentNoteId]);
+	}, [currentNoteId]); // eslint-disable-line
 
-	const saveCurrentNote = useCallback(({editorContent, title}) => {
+
+	const saveCurrentNote = useCallback(debounce(({editorContent, title}) => {
 		let newRawNoteData = [...rawNoteData];
 		newRawNoteData[currentNoteId] = {
 			title: title !== undefined ? title : currentNoteData.title,
@@ -69,7 +72,7 @@ const App = () => {
 			localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
 			setRawNoteData(newRawNoteData);
 		}
-	}, [currentNoteId, currentNoteData]); // eslint-disable-line
+	}, 400), [currentNoteId, currentNoteData]); // eslint-disable-line
 
 	const handleTitleChange = title => {
 		if((title.length < 15) && (currentNoteData.title !== title)){
@@ -77,11 +80,13 @@ const App = () => {
 		}
 	};
 
-	const [editorState, setEditorState] = useState();
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(currentNoteData.content));
+	useEffect(() => setEditorState(EditorState.createWithContent(currentNoteData.content)), [currentNoteData])
 
 	const updateEditorState = editorState => {
 		saveCurrentNote({editorContent: editorState.getCurrentContent()});
-	}
+		setEditorState(editorState);
+	};
 
 	return (
 		<div id="AppRoot" className="App">
@@ -96,10 +101,8 @@ const App = () => {
 					<Toolbar editorState={editorState} setEditorState={setEditorState} />
 				</HeaderWrapper>
 				<MyEditor
-					content={currentNoteData.content}
-					currentNoteId={currentNoteId}
-					saveContent={saveCurrentNote}
-					updateParentEditorState={updateEditorState}
+					editorState={editorState}
+					setEditorState={updateEditorState}
 				/>
 				<CornerIcon src={logo} />
 			</Container>

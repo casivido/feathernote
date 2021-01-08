@@ -47,17 +47,11 @@ const ScrollPaddingDiv = styled.div`
 `;
 
 // TODO: default props
-const MyEditor = ({content, currentNoteId, updateParentEditorState = () => {}}) => {
-	const [editorState, setEditorState] = useState(EditorState.createWithContent(content));
-	useEffect(() => {
-		setEditorState(EditorState.createWithContent(content))
-	}, [currentNoteId]); // eslint-disable-line
-
+const MyEditor = ({editorState, setEditorState}) => {
 	// Keep curried function bound to current state
 	const setMyFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
 
 	const onEditorChange = editorState => {
-		updateParentEditorState(editorState);
 		setEditorState(editorState);
 	}
 	return (

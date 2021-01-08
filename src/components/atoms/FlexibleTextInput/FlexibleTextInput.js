@@ -26,9 +26,10 @@ const TitleMeasurer = styled.span`
 	visibility: hidden;
 `;
 
-const FlexibleTitleInput = ({text = '', updateText = () => {}}) => {
-	const [currentText, setCurrentText] = useState(text);
+const FlexibleTextInput = ({text = '', updateText = () => {}}) => {
 	const titleRef = useRef();
+	const [currentText, setCurrentText] = useState(text);
+	useEffect(() => setCurrentText(text), [setCurrentText, text]);
 
 	// TODO: Figure out why initial load is shorter
 	const [initialWidth, setInitialWidth] = useState(10);
@@ -46,4 +47,4 @@ const FlexibleTitleInput = ({text = '', updateText = () => {}}) => {
 	</>;
 }
 
-export default FlexibleTitleInput;
+export default FlexibleTextInput;

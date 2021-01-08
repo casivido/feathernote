@@ -12,6 +12,7 @@
     "draft-js-autolist-plugin": "^3.0.0",
     "draft-js-list-depth-plugin": "^1.0.1",
     "draft-js-plugins-editor": "^3.0.0",
+    "lodash": "^4.17.20",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-froala-wysiwyg": "^3.2.2-1",
