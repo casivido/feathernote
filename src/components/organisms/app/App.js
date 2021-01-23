@@ -38,7 +38,10 @@ const App = () => {
 	const [rawNoteData, setRawNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || [DEFAULT_NOTE]);
 	const [currentNoteId, setCurrentNoteId] = useState(0);
 
-	// Load note data or create new when currentNoteId change
+	// ***** CONTENT State *****
+
+	// Load note data or create a new note ONLY when currentNoteId change
+	// (Data is otherwise stored in )
 	const currentNoteContent = useMemo(() => {
 		if(rawNoteData[currentNoteId]) {
 			return convertFromRaw(rawNoteData[currentNoteId].content);
@@ -46,7 +49,7 @@ const App = () => {
 			const newContent = new ContentState.createFromText('');
 			const newNoteData = {
 				content: newContent,
-				title: `Note ${currentNoteId}`
+				title: `New Note`
 			}
 			let newRawNoteData = rawNoteData;
 			newRawNoteData[currentNoteId] = {...newNoteData, content: convertToRaw(newContent)}
@@ -55,21 +58,10 @@ const App = () => {
 		};
 	}, [currentNoteId]); // eslint-disable-line
 
-	const [currentNoteTitle, setCurrentNoteTitle] = useState(rawNoteData[currentNoteId].title);
-	const saveCurrentNoteTitle = useCallback(debounce(title => {
-		let newRawNoteData = [...rawNoteData];
-		newRawNoteData[currentNoteId] = {
-			...newRawNoteData[currentNoteId],
-			title: title
-		};
-		localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
-		setCurrentNoteTitle(title);
-		setRawNoteData(newRawNoteData);
-	}, 300));
+	const [editorState, setEditorState] = useState(EditorState.createWithContent(currentNoteContent));
+	useEffect(() => setEditorState(EditorState.createWithContent(currentNoteContent)), [currentNoteContent])
 
 	const saveCurrentNoteContent = useCallback(debounce(editorContent => {
-		// const editorContent = editorContent || currentNoteContent;
-		// const titleToSave = title !== undefined ? title : currentNoteTitle;
 		let newRawNoteData = [...rawNoteData];
 		newRawNoteData[currentNoteId] = {
 			...newRawNoteData[currentNoteId],
@@ -81,21 +73,33 @@ const App = () => {
 			localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
 			setRawNoteData(newRawNoteData);
 		}
-	}, 300), [currentNoteId, currentNoteContent]); // eslint-disable-line
-
-	const handleTitleChange = title => {
-		if((title.length < 15) && (currentNoteTitle !== title)){
-			saveCurrentNoteTitle(title);
-		}
-	};
-
-	const [editorState, setEditorState] = useState(EditorState.createWithContent(currentNoteContent));
-	useEffect(() => setEditorState(EditorState.createWithContent(currentNoteContent)), [currentNoteContent])
+	}, 300), [currentNoteId, rawNoteData, currentNoteContent]); // eslint-disable-line
 
 	const updateEditorState = editorState => {
 		saveCurrentNoteContent(editorState.getCurrentContent());
 		setEditorState(editorState);
 	};
+
+	// ***** TITLE State *****
+
+	const [currentNoteTitle, setCurrentNoteTitle] = useState(rawNoteData[currentNoteId].title);
+	useEffect(() => console.log('setting') || setCurrentNoteTitle(rawNoteData[currentNoteId].title), [currentNoteId]);
+	console.log('currentNoteTitle', currentNoteTitle);
+
+	const handleTitleChange = useCallback(title => {
+		if((title.length < 15) && (currentNoteTitle !== title)){
+			let newRawNoteData = [...rawNoteData];
+			newRawNoteData[currentNoteId] = {
+				...newRawNoteData[currentNoteId],
+				title: title
+			};
+			localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
+			setCurrentNoteTitle(title);
+			setRawNoteData(newRawNoteData);
+		}
+	});
+
+	// ***** RENDER *****
 
 	return (
 		<div id="AppRoot" className="App">
