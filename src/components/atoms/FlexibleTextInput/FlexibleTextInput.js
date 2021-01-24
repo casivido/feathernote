@@ -1,10 +1,10 @@
-import React, {useState, useRef, useEffect} from 'react';
+import React, {useState, useRef, useEffect, useCallback} from 'react';
 import styled from 'styled-components';
 
 const Title = styled.input`
-	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
+	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
 	font-weight: 200;
@@ -26,7 +26,7 @@ const TitleMeasurer = styled.span`
 	visibility: hidden;
 `;
 
-const FlexibleTextInput = ({text = '', updateText = () => {}}) => {
+const FlexibleTextInput = ({text = '', updateText = () => {}, limit = 0}) => {
 	const titleRef = useRef();
 	const [currentText, setCurrentText] = useState(text);
 	useEffect(() => setCurrentText(text), [setCurrentText, text]);
@@ -41,8 +41,16 @@ const FlexibleTextInput = ({text = '', updateText = () => {}}) => {
 		setInitialWidth(0);
 	}, [currentText]); // eslint-disable-line
 
+	const processTextChange = useCallback(evt => {
+		const newText = evt.target.value;
+
+		if(limit === 0 || newText.length <= limit){
+			setCurrentText(newText);
+		}
+	}, [limit]);
+
 	return <>
-		<Title type="text" value={currentText} width={width} onChange={evt => setCurrentText(evt.target.value)}/>
+		<Title type="text" value={currentText} width={width} onChange={processTextChange}/>
 		<TitleMeasurer ref={titleRef}>{currentText}</TitleMeasurer>
 	</>;
 }

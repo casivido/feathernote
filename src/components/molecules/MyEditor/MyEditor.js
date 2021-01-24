@@ -1,6 +1,5 @@
 // External
-import React, {useEffect, useState, useCallback} from 'react';
-import {EditorState} from 'draft-js';
+import React, {useCallback} from 'react';
 import Editor from 'draft-js-plugins-editor';
 import styled from 'styled-components';
 import 'draft-js/dist/Draft.css';
@@ -16,11 +15,11 @@ const listDepthPlugin = createListDepthPlugin()
 const autoListPlugin = createAutoListPlugin()
 
 const StyledContainer = styled.div`
-	position: absolute;
 	font-size: 1.2rem;
-	left: 20vw;
-	width: 60vw;
 	height: 100vh;
+	left: 20vw;
+	position: absolute;
+	width: 60vw;
 
 	overflow-x: hidden;
 	overflow-y: auto;
@@ -41,8 +40,8 @@ const StyledContainer = styled.div`
 `;
 
 const ScrollPaddingDiv = styled.div`
-	position: absolute;
 	height: 90vh;
+	position: absolute;
 	width: 1px;
 `;
 
@@ -64,8 +63,8 @@ const MyEditor = ({editorState, setEditorState}) => {
 					editorState={editorState}
 					handleKeyCommand={handleKeyCommand(setEditorState)}
 					onChange={onEditorChange}
-					plugins={[autoListPlugin, listDepthPlugin]}
 					placeholder={"Hi there..."}
+					plugins={[autoListPlugin, listDepthPlugin]}
 				/>
 				<ScrollPaddingDiv />
 			</StyledContainer>

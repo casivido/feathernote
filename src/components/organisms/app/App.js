@@ -73,7 +73,7 @@ const App = () => {
 			localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
 			setRawNoteData(newRawNoteData);
 		}
-	}, 300), [currentNoteId, rawNoteData, currentNoteContent]); // eslint-disable-line
+	}, 250), [currentNoteId, rawNoteData, currentNoteContent]); // eslint-disable-line
 
 	const updateEditorState = editorState => {
 		saveCurrentNoteContent(editorState.getCurrentContent());
@@ -87,7 +87,7 @@ const App = () => {
 	console.log('currentNoteTitle', currentNoteTitle);
 
 	const handleTitleChange = useCallback(title => {
-		if((title.length < 15) && (currentNoteTitle !== title)){
+		if(title != '' && currentNoteTitle !== title){
 			let newRawNoteData = [...rawNoteData];
 			newRawNoteData[currentNoteId] = {
 				...newRawNoteData[currentNoteId],
@@ -110,7 +110,7 @@ const App = () => {
 					noteTitles={rawNoteData.map(note => note.title)}
 				/>
 				<HeaderWrapper>
-					<FlexibleTextInput text={currentNoteTitle} updateText={handleTitleChange} />
+					<FlexibleTextInput text={currentNoteTitle} updateText={handleTitleChange} limit={15}/>
 					<Toolbar editorState={editorState} setEditorState={setEditorState} />
 				</HeaderWrapper>
 				<MyEditor
