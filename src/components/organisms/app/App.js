@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useEffect, useMemo} from 'react';
 import styled from 'styled-components';
 import {ContentState, convertToRaw, convertFromRaw, EditorState} from 'draft-js';
-import { debounce } from 'lodash';
+import { debounce, max } from 'lodash';
 
 import logo from '../../../images/logo.svg';
 import MyEditor from '../../molecules/MyEditor/MyEditor';
@@ -37,6 +37,7 @@ const HeaderWrapper = styled.div`
 const App = () => {
 	const [rawNoteData, setRawNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || [DEFAULT_NOTE]);
 	const [currentNoteId, setCurrentNoteId] = useState(0);
+	const [noteWasDeleted, setNoteWasDeleted] = useState(false);
 
 	// ***** CONTENT State *****
 
@@ -56,7 +57,7 @@ const App = () => {
 			setRawNoteData(newRawNoteData);
 			return newContent;
 		};
-	}, [currentNoteId]); // eslint-disable-line
+	}, [currentNoteId, noteWasDeleted]); // eslint-disable-line
 
 	const [editorState, setEditorState] = useState(EditorState.createWithContent(currentNoteContent));
 	useEffect(() => setEditorState(EditorState.createWithContent(currentNoteContent)), [currentNoteContent])
@@ -75,19 +76,33 @@ const App = () => {
 		}
 	}, 250), [currentNoteId, rawNoteData, currentNoteContent]); // eslint-disable-line
 
-	const updateEditorState = editorState => {
+	const updateEditorState = useCallback(editorState => {
 		saveCurrentNoteContent(editorState.getCurrentContent());
 		setEditorState(editorState);
-	};
+	}, [saveCurrentNoteContent, setEditorState]);
+
+	const deleteNote = useCallback(index => {
+		let deletedNotes = JSON.parse(localStorage.getItem('deletedNotes')) || [];
+		deletedNotes.push({
+			...rawNoteData[index]
+		});
+		localStorage.setItem('deletedNotes', JSON.stringify(deletedNotes));
+
+		let newRawNoteData = [...rawNoteData];
+		newRawNoteData.splice(index, 1);
+
+		setRawNoteData(newRawNoteData);
+		setCurrentNoteId(0);
+		setNoteWasDeleted(true);
+	}, [rawNoteData, currentNoteId])
 
 	// ***** TITLE State *****
 
 	const [currentNoteTitle, setCurrentNoteTitle] = useState(rawNoteData[currentNoteId].title);
-	useEffect(() => console.log('setting') || setCurrentNoteTitle(rawNoteData[currentNoteId].title), [currentNoteId]);
-	console.log('currentNoteTitle', currentNoteTitle);
+	useEffect(() => setCurrentNoteTitle(rawNoteData[currentNoteId].title), [currentNoteId, rawNoteData]);
 
 	const handleTitleChange = useCallback(title => {
-		if(title != '' && currentNoteTitle !== title){
+		if(title !== '' && currentNoteTitle !== title){
 			let newRawNoteData = [...rawNoteData];
 			newRawNoteData[currentNoteId] = {
 				...newRawNoteData[currentNoteId],
@@ -97,7 +112,15 @@ const App = () => {
 			setCurrentNoteTitle(title);
 			setRawNoteData(newRawNoteData);
 		}
-	});
+	}, [currentNoteTitle, currentNoteId, rawNoteData]);
+
+	// ***** Update temporary states *****
+
+	useEffect(() => {
+		if(noteWasDeleted){
+			setNoteWasDeleted(false);
+		}
+	}, [noteWasDeleted]);
 
 	// ***** RENDER *****
 
@@ -108,6 +131,7 @@ const App = () => {
 					setCurrentNoteId={setCurrentNoteId}
 					currentNoteId={currentNoteId}
 					noteTitles={rawNoteData.map(note => note.title)}
+					deleteCallback={deleteNote}
 				/>
 				<HeaderWrapper>
 					<FlexibleTextInput text={currentNoteTitle} updateText={handleTitleChange} limit={15}/>

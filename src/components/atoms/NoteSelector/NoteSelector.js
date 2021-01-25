@@ -7,7 +7,7 @@ const NotesWrapper = styled.div`
     border-left: solid black 2px;
     left: 10px;
     padding-left: 10px;
-    padding: 10px 0;
+    padding: 10px 0px 10px 5px;
     position: absolute;
     top: calc(150px + 5vh);
 `;
@@ -79,9 +79,9 @@ const NoteSelector = ({
 	return <NotesWrapper>
 		{noteTitles.map((title, index) => (
             deletingIndex === index
-                ? <NoteItem key={index} onClick={() => delete deleteNote(index)}>Hold to delete</NoteItem>
+                ? <NoteItem key={index} onClick={() => delete deleteNote(index)}>Delete</NoteItem>
                 : <NoteItem key={index} onClick={() => setCurrentNoteId(index)}>
-                    <DeleteButton onClick={evt => setDeletingIndex(index)}>X</DeleteButton>
+                    {noteTitles.length === 1 ? null : <DeleteButton onClick={evt => setDeletingIndex(index)}>X</DeleteButton>}
                     {title}
                 </NoteItem>
 		))}

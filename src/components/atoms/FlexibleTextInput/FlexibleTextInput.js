@@ -2,9 +2,9 @@ import React, {useState, useRef, useEffect, useCallback} from 'react';
 import styled from 'styled-components';
 
 const Title = styled.input`
+	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
-	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
 	font-weight: 200;
@@ -14,9 +14,9 @@ const Title = styled.input`
 	width: ${props => (props.width)}px;
 `;
 const TitleMeasurer = styled.span`
+	border: none;
 	border-bottom: black solid .1rem;
 	border-radius: 12px;
-	border: none;
 	font-family: Montserrat;
 	font-size: 4rem;
 	font-weight: 200;
@@ -32,7 +32,7 @@ const FlexibleTextInput = ({text = '', updateText = () => {}, limit = 0}) => {
 	useEffect(() => setCurrentText(text), [setCurrentText, text]);
 
 	// TODO: Figure out why initial load is shorter
-	const [initialWidth, setInitialWidth] = useState(10);
+	const [initialWidth, setInitialWidth] = useState(20);
 	const [width, setWidth] = useState(0);
 
 	useEffect(() => {
