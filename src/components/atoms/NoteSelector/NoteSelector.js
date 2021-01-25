@@ -25,7 +25,12 @@ const NoteItem = styled.div`
     transition-duration: .5s;
     transition-delay: 0s;
 
-    &:hover{
+    &.current {
+        border-left: black solid 1px;
+    }
+
+    &:hover {
+        border-color: white;
         background-color: black;
         color: white;
 
@@ -50,13 +55,14 @@ const DeleteButton = styled.div`
     transition-duration: .5s;
     transition-delay: 0s;
 
-    &:hover{
+    &:hover {
         background-color: white;
         color: black;
     }
 `;
 
 const NoteSelector = ({
+    currentNoteId,
     noteTitles,
     setCurrentNoteId,
     deleteCallback = () => {}
@@ -79,8 +85,8 @@ const NoteSelector = ({
 	return <NotesWrapper>
 		{noteTitles.map((title, index) => (
             deletingIndex === index
-                ? <NoteItem key={index} onClick={() => delete deleteNote(index)}>Delete</NoteItem>
-                : <NoteItem key={index} onClick={() => setCurrentNoteId(index)}>
+                ? <NoteItem className={currentNoteId === index ? 'current' : ''} key={index} onClick={() => delete deleteNote(index)}>Delete</NoteItem>
+                : <NoteItem className={currentNoteId === index ? 'current' : ''} key={index} onClick={() => setCurrentNoteId(index)}>
                     {noteTitles.length === 1 ? null : <DeleteButton onClick={evt => setDeletingIndex(index)}>X</DeleteButton>}
                     {title}
                 </NoteItem>

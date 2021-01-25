@@ -11,8 +11,8 @@ import {setFocusToEnd, handleKeyCommand} from './editorHelpers';
 // Editor Plugins
 import createAutoListPlugin from 'draft-js-autolist-plugin';
 import createListDepthPlugin from 'draft-js-list-depth-plugin';
-const listDepthPlugin = createListDepthPlugin()
-const autoListPlugin = createAutoListPlugin()
+const listDepthPlugin = createListDepthPlugin();
+const autoListPlugin = createAutoListPlugin();
 
 const StyledContainer = styled.div`
 	font-size: 1.2rem;
