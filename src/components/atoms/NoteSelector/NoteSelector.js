@@ -1,6 +1,14 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import styled from 'styled-components';
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { debounce } from 'lodash';
+
+const NotesDropperDiv = styled.div`
+    &.hovered {
+        padding-top: calc(20px + 1rem);
+    }
+`;
 
 const NotesWrapper = styled.div`
 	text-align: center;
@@ -12,7 +20,7 @@ const NotesWrapper = styled.div`
     top: calc(150px + 5vh);
 `;
 
-const NoteItem = styled.div`
+const NoteItemDiv = styled.div`
     background: transparent;
     border: none;
     font-size: 1rem;
@@ -27,6 +35,16 @@ const NoteItem = styled.div`
 
     &.current {
         border-left: black solid 1px;
+    }
+
+    &.dragging {
+        height: 0;
+        padding: 0;
+        color: transparent !important;
+        background-color: transparent !important;
+        * {
+            border: none !important;
+        }
     }
 
     &:hover {
@@ -61,40 +79,87 @@ const DeleteButton = styled.div`
     }
 `;
 
+const NoteDropper = ({id, children, reorderNotes}) => {
+    const [{isOver}, drop] = useDrop({
+        accept: 'note',
+        drop: (item, monitor) => reorderNotes(item.id, id),
+        collect: (monitor) => ({
+            isOver: monitor.isOver()
+        })
+    });
+
+    return <NotesDropperDiv ref={drop} className={isOver ? 'hovered' : ''}>{children}</NotesDropperDiv>
+}
+
+const NoteItem = ({id, title, currentNote, reorderNotes, selectFn, deleteCallback}) => {
+    const [{isDragging}, drag] = useDrag({
+        item: {
+            id,
+            type: 'note'
+        },
+        canDrag: () => !!deleteCallback,
+        collect: (monitor) => ({
+            isDragging: monitor.isDragging(),
+        })
+    });
+
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // After setting isDeleting, clear it after X seconds
+    const clearDeletingIndexSoon = useCallback(debounce(() => {
+        if(isDeleting){
+            setIsDeleting(false);
+        }
+    }, 1500), [isDeleting, setIsDeleting]);
+    useEffect(clearDeletingIndexSoon, [isDeleting]);
+
+    const label = isDeleting ? 'Delete' : title;
+    const click = evt => {
+        isDeleting ? deleteCallback(id) : selectFn(id)
+    };
+    const classes = ''
+        + (currentNote ? ' current' : '')
+        + (isDragging ? ' dragging' : '');
+
+    return <NoteDropper id={id} reorderNotes={reorderNotes}>
+        <NoteItemDiv ref={drag} className={classes} key={id} onClick={click}>
+            {isDeleting || !deleteCallback
+                ? null
+                : <DeleteButton onClick={evt => setIsDeleting(true)}>X</DeleteButton>
+            }
+            {label}
+        </NoteItemDiv>
+    </NoteDropper>;
+}
+
 const NoteSelector = ({
     currentNoteId,
     noteTitles,
     setCurrentNoteId,
+    reorderNotes = () => {},
     deleteCallback = () => {}
 }) => {
-    const [deletingIndex, setDeletingIndex] = useState(null);
-
-    // After setting deletingIndex, clear it after X seconds
-    const clearDeletingIndexSoon = useCallback(debounce(() => {
-        if(deletingIndex != null){
-            setDeletingIndex(null);
-        }
-    }, 1500), [deletingIndex, setDeletingIndex]);
-    useEffect(clearDeletingIndexSoon, [deletingIndex]);
-
-    const deleteNote = useCallback(index => {
-        setDeletingIndex(null);
-        deleteCallback(index);
-    }, [setDeletingIndex, deleteCallback]);
-
-	return <NotesWrapper>
-		{noteTitles.map((title, index) => (
-            deletingIndex === index
-                ? <NoteItem className={currentNoteId === index ? 'current' : ''} key={index} onClick={() => delete deleteNote(index)}>Delete</NoteItem>
-                : <NoteItem className={currentNoteId === index ? 'current' : ''} key={index} onClick={() => setCurrentNoteId(index)}>
-                    {noteTitles.length === 1 ? null : <DeleteButton onClick={evt => setDeletingIndex(index)}>X</DeleteButton>}
-                    {title}
-                </NoteItem>
-		))}
-        <NoteItem key="new_note" onClick={() => setCurrentNoteId(noteTitles.length)}>
-            +
-        </NoteItem>
-	</NotesWrapper>
+	return <DndProvider backend={HTML5Backend}>
+        <NotesWrapper>
+            {noteTitles.map((title, index) => (
+                <NoteItem
+                    id={index}
+                    title={title}
+                    selectFn={setCurrentNoteId}
+                    currentNote={currentNoteId === index}
+                    reorderNotes={reorderNotes}
+                    deleteCallback={deleteCallback}
+                />
+            ))}
+            <NoteItem
+                id={noteTitles.length}
+                title="+"
+                selectFn={setCurrentNoteId}
+                reorderNotes={reorderNotes}
+                currentNote={false}
+            />
+        </NotesWrapper>
+    </DndProvider>;
 };
 
 export default NoteSelector;

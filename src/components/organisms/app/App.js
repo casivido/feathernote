@@ -34,6 +34,18 @@ const HeaderWrapper = styled.div`
 	z-index: 999;
 `;
 
+function moveArrayIndex(array, sourceIndex, destIndex) {
+    var placeholder = {};
+    // remove the object from its initial position and
+    // plant the placeholder object in its place to
+    // keep the array length constant
+    var objectToMove = array.splice(sourceIndex, 1, placeholder)[0];
+    // place the object in the desired position
+    array.splice(destIndex, 0, objectToMove);
+    // take out the temporary object
+    array.splice(array.indexOf(placeholder), 1);
+}
+
 const App = () => {
 	const [rawNoteData, setRawNoteData] = useState(JSON.parse(localStorage.getItem('noteContents')) || [DEFAULT_NOTE]);
 	const [currentNoteId, setCurrentNoteId] = useState(0);
@@ -80,6 +92,16 @@ const App = () => {
 		saveCurrentNoteContent(editorState.getCurrentContent());
 		setEditorState(editorState);
 	}, [saveCurrentNoteContent, setEditorState]);
+
+	const reorderNotes = useCallback((source, dest) => {
+		if (source == dest || source == dest+1) return;
+
+		let newRawNoteData = [...rawNoteData];
+		moveArrayIndex(newRawNoteData, source, dest);
+		localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
+		setRawNoteData(newRawNoteData);
+		setCurrentNoteId(dest);
+	});
 
 	const deleteNote = useCallback(index => {
 		let deletedNotes = JSON.parse(localStorage.getItem('deletedNotes')) || [];
@@ -132,6 +154,7 @@ const App = () => {
 					currentNoteId={currentNoteId}
 					noteTitles={rawNoteData.map(note => note.title)}
 					deleteCallback={deleteNote}
+					reorderNotes={reorderNotes}
 				/>
 				<HeaderWrapper>
 					<FlexibleTextInput text={currentNoteTitle} updateText={handleTitleChange} limit={15}/>
@@ -140,6 +163,7 @@ const App = () => {
 				<MyEditor
 					editorState={editorState}
 					setEditorState={updateEditorState}
+					noteId={currentNoteId}
 				/>
 				<CornerIcon src={logo} />
 			</Container>

@@ -1,5 +1,5 @@
 // External
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import Editor from 'draft-js-plugins-editor';
 import styled from 'styled-components';
 import 'draft-js/dist/Draft.css';
@@ -35,20 +35,18 @@ const StyledContainer = styled.div`
 	.DraftEditor-root {
 		background-color: white;
 		color: black;
-		padding-top: 150px;
+		padding: 1000px 0;
 	}
 `;
 
-const ScrollPaddingDiv = styled.div`
-	height: 90vh;
-	position: absolute;
-	width: 1px;
-`;
-
 // TODO: default props
-const MyEditor = ({editorState, setEditorState}) => {
+const MyEditor = ({editorState, setEditorState, noteId = 0}) => {
 	// Keep curried function bound to current state
 	const setMyFocusToEnd = useCallback(setFocusToEnd(editorState, setEditorState), [editorState, setEditorState]);
+
+	useEffect(() => {
+		document.querySelector('#editor-container').scrollTop = 800;
+	}, [noteId]);
 
 	const onEditorChange = editorState => {
 		setEditorState(editorState);
@@ -57,6 +55,7 @@ const MyEditor = ({editorState, setEditorState}) => {
 		<>
 			<EditorOverlays />
 			<StyledContainer
+				id="editor-container"
 				onClick={setMyFocusToEnd}
 			>
 				<Editor
@@ -66,7 +65,6 @@ const MyEditor = ({editorState, setEditorState}) => {
 					placeholder={"Hi there..."}
 					plugins={[autoListPlugin, listDepthPlugin]}
 				/>
-				<ScrollPaddingDiv />
 			</StyledContainer>
 		</>
 	);
