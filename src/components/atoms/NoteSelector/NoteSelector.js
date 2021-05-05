@@ -5,6 +5,9 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { debounce } from 'lodash';
 
 const NotesDropperDiv = styled.div`
+    transition-property: padding-top;
+    transition-duration: 1s;
+    transition-delay: 0s;
     &.hovered {
         padding-top: calc(20px + 1rem);
     }

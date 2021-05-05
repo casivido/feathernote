@@ -94,8 +94,6 @@ const App = () => {
 	}, [saveCurrentNoteContent, setEditorState]);
 
 	const reorderNotes = useCallback((source, dest) => {
-		if (source == dest || source == dest+1) return;
-
 		let newRawNoteData = [...rawNoteData];
 		moveArrayIndex(newRawNoteData, source, dest);
 		localStorage.setItem(`noteContents`, JSON.stringify(newRawNoteData));
