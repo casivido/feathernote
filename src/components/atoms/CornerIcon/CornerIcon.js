@@ -1,9 +1,7 @@
-import React from 'react';
-import styled, {keyframes} from 'styled-components';
+import React from "react";
+import styled, { keyframes } from "styled-components";
 
-const CornerIcon = ({src}) => (
-	<StyledImg src={src} alt="Corner Icon" />
-)
+const CornerIcon = ({ src }) => <StyledImg src={src} alt="Corner Icon" />;
 
 const rotate = keyframes`
 	from {
@@ -17,14 +15,14 @@ const rotate = keyframes`
 
 // TODO: Correlate rotation with scroll position
 const StyledImg = styled.img`
-	position: absolute;
-	height: 60px;
-	right: 50px;
-	bottom: 40px;
+  position: absolute;
+  height: 60px;
+  right: 50px;
+  bottom: 40px;
 
-	@media (prefers-reduced-motion: no-preference) {
-		animation: ${rotate} infinite 40s linear;
-	}
+  @media (prefers-reduced-motion: no-preference) {
+    animation: ${rotate} infinite 40s linear;
+  }
 `;
 
 export default CornerIcon;
